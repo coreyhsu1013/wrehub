@@ -1,0 +1,213 @@
+{% extends "admin/change_form.html" %}
+{% load i18n admin_urls static admin_modify %}
+
+{% block content %}
+<div style="margin-bottom: 30px;">
+  <h1 style="margin-bottom: 20px;">可閱讀摘要</h1>
+
+  {# 1. 基本資料 #}
+  <h2>1. 基本資料</h2>
+  <table class="adminform">
+    <tr>
+      <th style="width: 150px;">執照號碼</th>
+      <td>{{ original.permit_no|default:"—" }}</td>
+    </tr>
+    <tr>
+      <th>執照年度</th>
+      <td>{{ original.permit_year|default:"—" }}</td>
+    </tr>
+    <tr>
+      <th>發照日期</th>
+      <td>{{ original.issue_date|default:"—" }}</td>
+    </tr>
+    <tr>
+      <th>行政區</th>
+      <td>{{ original.district|default:"—" }}</td>
+    </tr>
+    <tr>
+      <th>使用分區</th>
+      <td>{{ original.zoning|default:"—" }}</td>
+    </tr>
+    <tr>
+      <th>建造類別</th>
+      <td>{{ original.build_type|default:"—" }}</td>
+    </tr>
+    <tr>
+      <th>構造種類</th>
+      <td>{{ original.structure|default:"—" }}</td>
+    </tr>
+  </table>
+
+  {# 2. 人員 #}
+  <h2>2. 人員</h2>
+  <table class="adminform">
+    <tr>
+      <th style="width: 150px;">起造人</th>
+      <td>{{ original.owner|default:"—" }}</td>
+    </tr>
+    <tr>
+      <th>設計人</th>
+      <td>{{ original.designer|default:"—" }}</td>
+    </tr>
+    <tr>
+      <th>監造人</th>
+      <td>{{ original.supervisor|default:"—" }}</td>
+    </tr>
+  </table>
+
+  {# 3. 建物資訊 #}
+  <h2>3. 建物資訊</h2>
+  <table class="adminform">
+    <tr>
+      <th style="width: 150px;">棟數</th>
+      <td>{{ original.building_count|default:"—" }}</td>
+    </tr>
+    <tr>
+      <th>幢數</th>
+      <td>{{ original.block_count|default:"—" }}</td>
+    </tr>
+    <tr>
+      <th>地上層數</th>
+      <td>{{ original.floors_above|default:"—" }}</td>
+    </tr>
+    <tr>
+      <th>地下層數</th>
+      <td>{{ original.floors_below|default:"—" }}</td>
+    </tr>
+    <tr>
+      <th>戶數</th>
+      <td>{{ original.unit_count|default:"—" }}</td>
+    </tr>
+  </table>
+
+  {# 4. 面積 #}
+  <h2>4. 面積（㎡）</h2>
+  <table class="adminform">
+    <tr>
+      <th style="width: 150px;">建築面積</th>
+      <td>{{ original.building_area_sqm|default:"—" }}</td>
+    </tr>
+    <tr>
+      <th>騎樓基地面積</th>
+      <td>{{ original.arcade_site_area_sqm|default:"—" }}</td>
+    </tr>
+    <tr>
+      <th>其他基地面積</th>
+      <td>{{ original.other_site_area_sqm|default:"—" }}</td>
+    </tr>
+  </table>
+
+  {# 5. 期限與金額 #}
+  <h2>5. 期限與金額</h2>
+  <table class="adminform">
+    <tr>
+      <th style="width: 150px;">建造期限</th>
+      <td>{{ original.build_deadline|default:"—" }}</td>
+    </tr>
+    <tr>
+      <th>工程造價</th>
+      <td>{{ original.project_cost|default:"—" }}</td>
+    </tr>
+  </table>
+
+  {# 6. 建築地點 #}
+  <h2>6. 建築地點</h2>
+  {% if original.addresses.all %}
+    <ol>
+      {% for addr in original.addresses.all %}
+        <li>{{ addr.address_text }}</li>
+      {% endfor %}
+    </ol>
+  {% else %}
+    <p>—</p>
+  {% endif %}
+
+  {# 7. 地段地號 #}
+  <h2>7. 地段地號</h2>
+  {% if original.parcels.all %}
+    <ol>
+      {% for parcel in original.parcels.all %}
+        <li>{{ parcel.parcel_text }}</li>
+      {% endfor %}
+    </ol>
+  {% else %}
+    <p>—</p>
+  {% endif %}
+
+  {# 8. 建築概要 #}
+  <h2>8. 建築概要</h2>
+  {% if original.floors.all %}
+    <ol>
+      {% for floor in original.floors.all|slice:":10" %}
+        <li>{{ floor.floor_text }}</li>
+      {% endfor %}
+    </ol>
+    {% if original.floors.all|length > 10 %}
+      <details>
+        <summary>顯示更多（共 {{ original.floors.all|length }} 筆）</summary>
+        <ol start="11">
+          {% for floor in original.floors.all|slice:"10:" %}
+            <li>{{ floor.floor_text }}</li>
+          {% endfor %}
+        </ol>
+      </details>
+    {% endif %}
+  {% else %}
+    <p>—</p>
+  {% endif %}
+
+  {# 9. 雜項工作物 #}
+  <h2>9. 雜項工作物</h2>
+  {% if original.misc_items.all %}
+    <ol>
+      {% for misc in original.misc_items.all|slice:":10" %}
+        <li>{{ misc.misc_text }}</li>
+      {% endfor %}
+    </ol>
+    {% if original.misc_items.all|length > 10 %}
+      <details>
+        <summary>顯示更多（共 {{ original.misc_items.all|length }} 筆）</summary>
+        <ol start="11">
+          {% for misc in original.misc_items.all|slice:"10:" %}
+            <li>{{ misc.misc_text }}</li>
+          {% endfor %}
+        </ol>
+      </details>
+    {% endif %}
+  {% else %}
+    <p>—</p>
+  {% endif %}
+
+  {# 10. 注意事項 #}
+  <h2>10. 注意事項</h2>
+  {% if original.note_items.all %}
+    <ol>
+      {% for note in original.note_items.all|slice:":10" %}
+        <li>{{ note.note_text }}</li>
+      {% endfor %}
+    </ol>
+    {% if original.note_items.all|length > 10 %}
+      <details>
+        <summary>顯示更多（共 {{ original.note_items.all|length }} 筆）</summary>
+        <ol start="11">
+          {% for note in original.note_items.all|slice:"10:" %}
+            <li>{{ note.note_text }}</li>
+          {% endfor %}
+        </ol>
+      </details>
+    {% endif %}
+  {% else %}
+    <p>—</p>
+  {% endif %}
+
+  {# 11. 原始資料 #}
+  <h2>11. 原始資料</h2>
+  <details>
+    <summary>展開查看原始資料（JSON）</summary>
+    <pre style="white-space:pre-wrap; font-family: ui-monospace, Menlo, monospace; max-height: 360px; overflow:auto;">{{ original.raw }}</pre>
+  </details>
+</div>
+
+{# 保留原有的 form 和 inline #}
+{{ block.super }}
+{% endblock %}

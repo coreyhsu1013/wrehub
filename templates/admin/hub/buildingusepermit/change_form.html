@@ -1,0 +1,318 @@
+{% extends "admin/change_form.html" %}
+{% load i18n admin_urls static admin_modify %}
+
+{% block content %}
+<div style="margin-bottom: 30px;">
+  <h1 style="margin-bottom: 20px;">可閱讀摘要</h1>
+
+  {# 0. 使用執照基本資料 #}
+  <h2>0. 使用執照基本資料</h2>
+  <table class="adminform">
+    <tr>
+      <th style="width: 150px;">執照號碼</th>
+      <td>{{ original.permit_no|default:"—" }}</td>
+    </tr>
+    <tr>
+      <th>執照年度</th>
+      <td>{{ original.permit_year|default:"—" }}</td>
+    </tr>
+    <tr>
+      <th>發照日期</th>
+      <td>{{ original.issue_date_text|default:"—" }}</td>
+    </tr>
+    <tr>
+      <th>原核發執照</th>
+      <td>{{ original.original_permit_no|default:"—" }}</td>
+    </tr>
+    <tr>
+      <th>建造類別</th>
+      <td>{{ original.build_type|default:"—" }}</td>
+    </tr>
+  </table>
+
+  {# 1. 建築資訊 #}
+  <h2>1. 建築資訊</h2>
+  <table class="adminform">
+    <tr>
+      <th style="width: 150px;">使用分區</th>
+      <td>{{ original.zoning|default:"—" }}</td>
+    </tr>
+    <tr>
+      <th>構造種類</th>
+      <td>{{ original.structure_type|default:"—" }}</td>
+    </tr>
+    <tr>
+      <th>建物高度（m）</th>
+      <td>{{ original.building_height_m|default:"—" }}</td>
+    </tr>
+    <tr>
+      <th>棟數</th>
+      <td>{{ original.building_count|default:"—" }}</td>
+    </tr>
+    <tr>
+      <th>幢數</th>
+      <td>{{ original.block_count|default:"—" }}</td>
+    </tr>
+    <tr>
+      <th>地上層數</th>
+      <td>{{ original.floors_above|default:"—" }}</td>
+    </tr>
+    <tr>
+      <th>地下層數</th>
+      <td>{{ original.floors_below|default:"—" }}</td>
+    </tr>
+    <tr>
+      <th>戶數</th>
+      <td>{{ original.unit_count|default:"—" }}</td>
+    </tr>
+  </table>
+
+  {# 2. 基地與面積（㎡） #}
+  <h2>2. 基地與面積（㎡）</h2>
+  <table class="adminform">
+    <tr>
+      <th style="width: 150px;">建築面積</th>
+      <td>{{ original.footprint_area_sqm|default:"—" }}</td>
+    </tr>
+    <tr>
+      <th>騎樓基地面積</th>
+      <td>{{ original.arcade_site_area_sqm|default:"—" }}</td>
+    </tr>
+    <tr>
+      <th>其他基地面積</th>
+      <td>{{ original.other_site_area_sqm|default:"—" }}</td>
+    </tr>
+    <tr>
+      <th>法定空地面積</th>
+      <td>{{ original.legal_open_space_sqm|default:"—" }}</td>
+    </tr>
+    <tr>
+      <th>地上避難面積</th>
+      <td>{{ original.refuge_area_above_sqm|default:"—" }}</td>
+    </tr>
+    <tr>
+      <th>地下避難面積</th>
+      <td>{{ original.refuge_area_below_sqm|default:"—" }}</td>
+    </tr>
+  </table>
+
+  {# 3. 建築地點（地址清單） #}
+  <h2>3. 建築地點</h2>
+  {% if original.addresses.all %}
+    <table class="adminform">
+      <thead>
+        <tr>
+          <th style="width: 80px;">序號</th>
+          <th>地址</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for addr in original.addresses.all|slice:":20" %}
+          <tr>
+            <td>{{ addr.seq }}</td>
+            <td>{{ addr.address_text }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% if original.addresses.all|length > 20 %}
+      <details>
+        <summary>展開全部（還有 {{ original.addresses.all|length|add:"-20" }} 筆）</summary>
+        <table class="adminform">
+          <thead>
+            <tr>
+              <th style="width: 80px;">序號</th>
+              <th>地址</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for addr in original.addresses.all|slice:"20:" %}
+              <tr>
+                <td>{{ addr.seq }}</td>
+                <td>{{ addr.address_text }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </details>
+    {% endif %}
+  {% else %}
+    <p>—</p>
+  {% endif %}
+
+  {# 4. 地段地號（原文清單） #}
+  <h2>4. 地段地號</h2>
+  {% if original.parcels.all %}
+    <table class="adminform">
+      <thead>
+        <tr>
+          <th style="width: 80px;">序號</th>
+          <th>地段地號</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for parcel in original.parcels.all|slice:":20" %}
+          <tr>
+            <td>{{ parcel.seq }}</td>
+            <td>{{ parcel.parcel_text }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% if original.parcels.all|length > 20 %}
+      <details>
+        <summary>展開全部（還有 {{ original.parcels.all|length|add:"-20" }} 筆）</summary>
+        <table class="adminform">
+          <thead>
+            <tr>
+              <th style="width: 80px;">序號</th>
+              <th>地段地號</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for parcel in original.parcels.all|slice:"20:" %}
+              <tr>
+                <td>{{ parcel.seq }}</td>
+                <td>{{ parcel.parcel_text }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </details>
+    {% endif %}
+  {% else %}
+    <p>—</p>
+  {% endif %}
+
+  {# 5. 樓層用途明細 #}
+  <h2>5. 樓層用途明細</h2>
+  {% if original.floors.all %}
+    <ol>
+      {% for floor in original.floors.all|slice:":10" %}
+        <li>{{ floor.floor_text }}</li>
+      {% endfor %}
+    </ol>
+    {% if original.floors.all|length > 10 %}
+      <details>
+        <summary>展開全部（還有 {{ original.floors.all|length|add:"-10" }} 筆）</summary>
+        <ol start="11">
+          {% for floor in original.floors.all|slice:"10:" %}
+            <li>{{ floor.floor_text }}</li>
+          {% endfor %}
+        </ol>
+      </details>
+    {% endif %}
+  {% else %}
+    <p>—</p>
+  {% endif %}
+
+  {# 6. 停車空間 #}
+  <h2>6. 停車空間</h2>
+  {% if original.parkings.all %}
+    <ol>
+      {% for parking in original.parkings.all|slice:":10" %}
+        <li>{{ parking.parking_text }}</li>
+      {% endfor %}
+    </ol>
+    {% if original.parkings.all|length > 10 %}
+      <details>
+        <summary>展開全部（還有 {{ original.parkings.all|length|add:"-10" }} 筆）</summary>
+        <ol start="11">
+          {% for parking in original.parkings.all|slice:"10:" %}
+            <li>{{ parking.parking_text }}</li>
+          {% endfor %}
+        </ol>
+      </details>
+    {% endif %}
+  {% else %}
+    <p>—</p>
+  {% endif %}
+
+  {# 7. 雜項工作物 #}
+  <h2>7. 雜項工作物</h2>
+  {% if original.misc_work %}
+    <p>{{ original.misc_work.description|default:"—" }}</p>
+  {% else %}
+    <p>—</p>
+  {% endif %}
+
+  {# 8. 相關人員 #}
+  <h2>8. 相關人員</h2>
+  <table class="adminform">
+    <tr>
+      <th style="width: 150px;">設計人</th>
+      <td>{{ original.designer|default:"—" }}</td>
+    </tr>
+    <tr>
+      <th>監造人</th>
+      <td>{{ original.supervisor|default:"—" }}</td>
+    </tr>
+    <tr>
+      <th>承造人</th>
+      <td>{{ original.contractor|default:"—" }}</td>
+    </tr>
+  </table>
+
+  {# 9. 工期與金額 #}
+  <h2>9. 工期與金額</h2>
+  <table class="adminform">
+    <tr>
+      <th style="width: 150px;">開工日期</th>
+      <td>{{ original.start_date_text|default:"—" }}</td>
+    </tr>
+    <tr>
+      <th>竣工日期</th>
+      <td>{{ original.completion_date_text|default:"—" }}</td>
+    </tr>
+    <tr>
+      <th>工程金額</th>
+      <td>{{ original.project_cost_text|default:"—" }}</td>
+    </tr>
+  </table>
+
+  {# 10. 注意事項 #}
+  <h2>10. 注意事項</h2>
+  {% if original.notes.all %}
+    <ol>
+      {% for note in original.notes.all|slice:":10" %}
+        <li>{{ note.note_text }}</li>
+      {% endfor %}
+    </ol>
+    {% if original.notes.all|length > 10 %}
+      <details>
+        <summary>展開全部（還有 {{ original.notes.all|length|add:"-10" }} 筆）</summary>
+        <ol start="11">
+          {% for note in original.notes.all|slice:"10:" %}
+            <li>{{ note.note_text }}</li>
+          {% endfor %}
+        </ol>
+      </details>
+    {% endif %}
+  {% else %}
+    <p>—</p>
+  {% endif %}
+
+  {# 11. 適用法令與備註 #}
+  <h2>11. 適用法令與備註</h2>
+  <table class="adminform">
+    <tr>
+      <th style="width: 150px;">適用法令概要</th>
+      <td>{{ original.law_summary|default:"—"|linebreaks }}</td>
+    </tr>
+    <tr>
+      <th>變更概要</th>
+      <td>{{ original.change_summary_text|default:"—"|linebreaks }}</td>
+    </tr>
+  </table>
+
+  {# 12. 原始資料（系統） #}
+  <h2>12. 原始資料（系統）</h2>
+  <details>
+    <summary>展開原始資料（raw）</summary>
+    <pre style="white-space:pre-wrap; font-family: ui-monospace, Menlo, monospace; max-height: 360px; overflow:auto;">{{ original.raw }}</pre>
+  </details>
+</div>
+
+{# 保留原有的 form 和 inline #}
+{{ block.super }}
+{% endblock %}

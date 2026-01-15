@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <title>WRE Hub</title>
+  <style>
+    body { font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Arial; padding:24px; max-width: 900px; margin:0 auto; }
+    .card { border:1px solid #ddd; border-radius:14px; padding:16px; background:#fff; }
+    .row { display:flex; gap:12px; flex-wrap:wrap; margin-top:12px; }
+    .btn { padding:10px 12px; border:1px solid #111; background:#111; color:#fff; border-radius:10px; cursor:pointer; text-decoration:none; display:inline-block;}
+    .btn2 { padding:10px 12px; border:1px solid #999; background:#fff; border-radius:10px; cursor:pointer; text-decoration:none; display:inline-block;}
+    .muted { color:#666; font-size:12px; }
+    input { padding:8px 10px; font-size:14px; border:1px solid #ddd; border-radius:10px; width: 90px;}
+  </style>
+</head>
+<body>
+  <h2>WRE Hub</h2>
+  <div class="muted">入口頁：快速到 Compare / Permits。你同事不用進 Django Admin。</div>
+
+  <div style="margin:16px 0; padding:12px; border:1px solid #ddd; border-radius:10px;">
+    <div style="font-weight:700; margin-bottom:8px;">Quick Links</div>
+    <div style="display:flex; gap:12px; flex-wrap:wrap;">
+      <a href="/compare/" style="text-decoration:none; padding:6px 10px; border:1px solid #ccc; border-radius:8px;">Compare (Permits)</a>
+      <a href="/compare-ur/" style="text-decoration:none; padding:6px 10px; border:1px solid #ccc; border-radius:8px;">Compare (Urban Renewal)</a>
+      <a href="/permits/" style="text-decoration:none; padding:6px 10px; border:1px solid #ccc; border-radius:8px;">Permits</a>
+      <a href="/urban-renewal/" style="text-decoration:none; padding:6px 10px; border:1px solid #ccc; border-radius:8px;">Urban Renewal</a>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:12px;">
+    <h3>Quick Compare (住二/住三/商三/商四)</h3>
+    <form class="row" action="/compare/" method="get" style="align-items:end;">
+      <div>
+        <div class="muted">site_min (坪)</div>
+        <input name="site_min" value="25">
+      </div>
+      <div>
+        <div class="muted">site_max (坪)</div>
+        <input name="site_max" value="40">
+      </div>
+      <div>
+        <div class="muted">year (可空白)</div>
+        <input name="year" value="">
+      </div>
+      <div>
+        <button class="btn" type="submit">Go Compare</button>
+      </div>
+      <div>
+        <a class="btn2" href="/compare/">Compare (default)</a>
+      </div>
+    </form>
+  </div>
+
+  <div class="card" style="margin-top:12px;">
+    <h3>Permits Search</h3>
+    <div class="row">
+      <a class="btn" href="/permits/">Go Permits</a>
+      <a class="btn2" href="/admin/">Admin</a>
+    </div>
+  </div>
+</body>
+</html>
+
+
+
+
+
+

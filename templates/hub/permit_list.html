@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <title>WRE Hub - Permits</title>
+  <style>
+    body { font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Arial; padding:16px; }
+    .row { display:flex; gap:12px; flex-wrap:wrap; align-items:flex-start; }
+    .card { border:1px solid #ddd; border-radius:12px; padding:12px; background:#fff; }
+    .muted { color:#666; font-size:12px; }
+    input, select { padding:6px 8px; font-size:13px; }
+    .btn { padding:7px 10px; border:1px solid #111; background:#111; color:#fff; border-radius:8px; cursor:pointer; }
+    .btn2 { padding:7px 10px; border:1px solid #999; background:#fff; border-radius:8px; cursor:pointer; }
+    table { width:100%; border-collapse:collapse; margin-top:12px; }
+    th, td { border-bottom:1px solid #eee; padding:8px; font-size:13px; vertical-align:top; }
+    th { text-align:left; background:#fafafa; position:sticky; top:0; }
+    a { color:#0b57d0; text-decoration:none; }
+    .pill { display:inline-block; padding:2px 8px; border:1px solid #ddd; border-radius:999px; font-size:12px; }
+  </style>
+</head>
+<body>
+  <div style="display:flex; justify-content:space-between; align-items:center;"><h2 style="margin:0;">Permits Search</h2><div><a class="btn2" href="/">Home</a> <a class="btn2" href="/compare/">Compare</a></div></div>
+  <div class="muted">不用登入：admin 只是給你管理用，這頁是給你同事/你自己日常查詢。</div>
+
+  <div class="row">
+    <div class="card" style="flex: 1 1 560px;">
+      <h3>Filters</h3>
+      <form method="get" class="row" style="align-items:end;">
+        <div>
+          <div class="muted">Zone</div>
+          <select name="zone">
+            <option value="">(all)</option>
+            {% for z in zones %}
+              <option value="{{z}}" {% if q.zone == z %}selected{% endif %}>{{z}}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div>
+          <div class="muted">Designer contains</div>
+          <input name="designer" value="{{ q.designer|default:'' }}" placeholder="吳政聰">
+        </div>
+
+        <div>
+          <div class="muted">Year</div>
+          <input name="year" value="{{ q.year|default:'' }}" size="6" placeholder="113">
+        </div>
+
+        <div>
+          <div class="muted">Site ping</div>
+          <input name="site_min" value="{{ q.site_min|default:'' }}" size="6" placeholder="25">
+          <input name="site_max" value="{{ q.site_max|default:'' }}" size="6" placeholder="40">
+        </div>
+
+        <div>
+          <div class="muted">Bld ping</div>
+          <input name="bld_min" value="{{ q.bld_min|default:'' }}" size="6">
+          <input name="bld_max" value="{{ q.bld_max|default:'' }}" size="6">
+        </div>
+
+        <div>
+          <div class="muted">Issue date</div>
+          <input type="date" name="date_from" value="{{ q.date_from|default:'' }}">
+          <input type="date" name="date_to" value="{{ q.date_to|default:'' }}">
+        </div>
+
+        <div>
+          <div class="muted">Sort</div>
+          <select name="sort">
+            {% for val,label in sort_choices %}
+              <option value="{{ val }}" {% if sort == val %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div>
+          <button class="btn" type="submit">Search</button>
+          <a class="btn2" href="/permits/">Reset</a>
+        </div>
+
+        <div>
+          <div class="muted">Export</div>
+          <a class="btn2" href="/permits/export.csv?{% for k,v in q.items %}{% if k != 'page' %}{{k}}={{v|urlencode}}&{% endif %}{% endfor %}">CSV</a>
+        </div>
+      </form>
+    </div>
+
+    <div class="card" style="flex: 1 1 320px;">
+      <h3>Summary</h3>
+      <div class="muted">N</div>
+      <div><b>{{ summary.n }}</b></div>
+      <div class="muted" style="margin-top:8px;">Averages</div>
+      <div>site_ping: {{ summary.avg_site|floatformat:1 }}</div>
+      <div>bld_ping: {{ summary.avg_bld|floatformat:1 }}</div>
+      <div>cost: {{ summary.avg_cost|floatformat:0 }}</div>
+      <div>cost/bld_ping: {{ summary.avg_cpb|floatformat:0 }}</div>
+      <div>bld/site: {{ summary.avg_bps|floatformat:2 }}</div>
+    </div>
+
+    <div class="card" style="flex: 1 1 320px;">
+      <h3>Top Designers</h3>
+      <div class="muted">Top 20 (under current filters)</div>
+      <ul>
+        {% for r in top_designers %}
+          <li>
+            <a href="?{% for k,v in q.items %}{% if k != 'designer' and k != 'page' %}{{k}}={{v|urlencode}}&{% endif %}{% endfor %}designer={{r.designer|urlencode}}">
+              {{ r.designer }}
+            </a>
+            <span class="pill">{{ r.n }}</span>
+          </li>
+        {% empty %}
+          <li class="muted">No data</li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+
+  <div class="row" style="justify-content:space-between; margin-top:12px;">
+    <div class="muted">Page {{page}}</div>
+    <div>
+      {% if page > 1 %}
+        <a class="btn2" href="?{% for k,v in q.items %}{% if k != 'page' %}{{k}}={{v|urlencode}}&{% endif %}{% endfor %}page={{page|add:'-1'}}">Prev</a>
+      {% endif %}
+      {% if items|length >= page_size %}
+        <a class="btn2" href="?{% for k,v in q.items %}{% if k != 'page' %}{{k}}={{v|urlencode}}&{% endif %}{% endfor %}page={{page|add:'1'}}">Next</a>
+      {% endif %}
+    </div>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Permit</th>
+        <th>Issue</th>
+        <th>Zone</th>
+        <th>Designer</th>
+        <th>Site(ping)</th>
+        <th>Bld(ping)</th>
+        <th>Cost</th>
+        <th>Cost/BldPing</th>
+        <th>Bld/Site</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for o in items %}
+        <tr>
+          <td><a href="/permits/{{o.id}}/">{{ o.permit_no }}</a></td>
+          <td>{{ o.issue_date }}</td>
+          <td>{{ o.zoning }}</td>
+          <td>{{ o.designer }}</td>
+          <td>{{ o.site_ping|floatformat:1 }}</td>
+          <td>{{ o.bld_ping|floatformat:1 }}</td>
+          <td>{{ o.project_cost }}</td>
+          <td>{{ o.cost_per_bld_ping|floatformat:0 }}</td>
+          <td>{{ o.bld_per_site|floatformat:2 }}</td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="9" class="muted">No results</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</body>
+</html>

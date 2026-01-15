@@ -1,0 +1,107 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <title>Urban Renewal Cases</title>
+  <style>
+    body { font-family: -apple-system, system-ui, sans-serif; margin: 20px; }
+    .row { display:flex; gap:10px; flex-wrap:wrap; align-items:end; }
+    label { font-size: 12px; opacity: .8; display:block; margin-bottom:4px; }
+    input, select { padding:8px; border:1px solid #ccc; border-radius:8px; }
+    .btn { padding:8px 12px; border:1px solid #333; border-radius:10px; background:#fff; cursor:pointer; }
+    table { border-collapse: collapse; width:100%; margin-top:16px; }
+    th, td { border-bottom:1px solid #eee; padding:8px; text-align:left; vertical-align:top; }
+    th { background:#fafafa; position:sticky; top:0; }
+    .muted { opacity:.7; }
+    .chip { display:inline-block; padding:2px 8px; border:1px solid #ddd; border-radius:999px; font-size:12px; }
+  </style>
+</head>
+<body>
+  <div style="display:flex; justify-content:space-between; align-items:center;">
+    <h2 style="margin:0;">Urban Renewal (危老) Cases</h2>
+    <div class="muted">
+      <a href="/" style="text-decoration:none;">Home</a> ·
+      <a href="/compare/" style="text-decoration:none;">Compare</a> ·
+      <a href="/permits/" style="text-decoration:none;">Permits</a>
+    </div>
+  </div>
+
+  <div class="muted" style="margin-top:6px;">Matched rows: <b>{{ count }}</b> (showing first 500)</div>
+
+  <form method="get" style="margin-top:12px;">
+    <div class="row">
+      <div>
+        <label>Keyword</label>
+        <input name="q" value="{{ q }}" placeholder="address / any raw text"/>
+      </div>
+
+      <div>
+        <label>District</label>
+        <select name="district">
+          <option value="">(all)</option>
+          {% for d in districts %}
+            <option value="{{ d }}" {% if d == district %}selected{% endif %}>{{ d }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div>
+        <label>Date from</label>
+        <input name="date_from" value="{{ date_from }}" placeholder="YYYY-MM-DD"/>
+      </div>
+      <div>
+        <label>Date to</label>
+        <input name="date_to" value="{{ date_to }}" placeholder="YYYY-MM-DD"/>
+      </div>
+
+      <div>
+        <label>Site ping min</label>
+        <input name="ping_min" value="{{ ping_min }}" style="width:120px;" placeholder="e.g. 25"/>
+      </div>
+      <div>
+        <label>Site ping max</label>
+        <input name="ping_max" value="{{ ping_max }}" style="width:120px;" placeholder="e.g. 40"/>
+      </div>
+
+      <div>
+        <button class="btn" type="submit">Filter</button>
+      </div>
+    </div>
+  </form>
+
+  <table>
+    <thead>
+      <tr>
+        <th>case_no</th>
+        <th>district</th>
+        <th>approved_date</th>
+        <th>site_area</th>
+        <th>total_bonus</th>
+        <th>address/raw</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for r in rows %}
+      <tr>
+        <td><span class="chip">{{ r.case_no }}</span></td>
+        <td>{{ r.district }}</td>
+        <td>{{ r.approved_date|default:"" }}</td>
+        <td class="muted">
+          {{ r.site_area_sqm }} ㎡
+          {% if r.site_area_ping %} / {{ r.site_area_ping }} 坪{% endif %}
+        </td>
+        <td>{{ r.total_bonus_pct|default:"" }}</td>
+        <td style="max-width:520px;">
+          {% if r.address %}<div>{{ r.address }}</div>{% endif %}
+          <div class="muted" style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+            {{ r.raw.cols|default:"" }}
+          </div>
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="6" class="muted">No rows</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</body>
+</html>

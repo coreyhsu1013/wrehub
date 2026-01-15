@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <title>Compare Zones</title>
+  <style>
+    body { font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Arial; padding:16px; }
+    .muted { color:#666; font-size:12px; }
+    input, select { padding:6px 8px; font-size:13px; }
+    .btn { padding:7px 10px; border:1px solid #111; background:#111; color:#fff; border-radius:8px; cursor:pointer; }
+    .btn2 { padding:7px 10px; border:1px solid #999; background:#fff; border-radius:8px; cursor:pointer; text-decoration:none; }
+    .grid { display:grid; grid-template-columns: repeat(4, 1fr); gap:12px; }
+    .card { border:1px solid #ddd; border-radius:12px; padding:12px; background:#fff; }
+    .k { color:#666; font-size:12px; margin-top:6px; }
+    .v { font-size:18px; font-weight:700; }
+    .row { display:flex; gap:12px; flex-wrap:wrap; align-items:flex-end; }
+    .pill { display:inline-block; padding:2px 8px; border:1px solid #ddd; border-radius:999px; font-size:12px; }
+    a { color:#0b57d0; text-decoration:none; }
+    ul { margin:8px 0 0 18px; }
+  </style>
+</head>
+<body>
+  <div style="display:flex; justify-content:space-between; align-items:center;"><h2 style="margin:0;">住二 / 住三 / 商三 / 商四：Compare</h2><div><a class="btn2" href="/">Home</a> <a class="btn2" href="/permits/">Permits</a></div></div>
+  <div class="muted">同一組條件下並排比較：件數、平均基地坪、平均建築坪、平均工程金額、平均成本/建築坪、平均 bld/site、Top 建築師。</div>
+
+  <div class="card" style="margin-top:12px;">
+    <form method="get" class="row">
+      <div>
+        <div class="muted">Site ping</div>
+        <input name="site_min" value="{{ q.site_min|default:'' }}" size="6" placeholder="25">
+        <input name="site_max" value="{{ q.site_max|default:'' }}" size="6" placeholder="40">
+      </div>
+
+      <div>
+        <div class="muted">Year</div>
+        <input name="year" value="{{ q.year|default:'' }}" size="6" placeholder="113 或空白">
+      </div>
+
+      <div>
+        <div class="muted">Designer contains</div>
+        <input name="designer" value="{{ q.designer|default:'' }}" placeholder="可空白">
+      </div>
+
+      <div>
+        <div class="muted">Issue date</div>
+        <input type="date" name="date_from" value="{{ q.date_from|default:'' }}">
+        <input type="date" name="date_to" value="{{ q.date_to|default:'' }}">
+      </div>
+
+      <div>
+        <button class="btn" type="submit">Compare</button>
+        <a class="btn2" href="/compare/">Reset</a>
+        <a class="btn2" href="/permits/?site_min={{q.site_min|default:''}}&site_max={{q.site_max|default:''}}">Go Permits</a>
+      </div>
+    </form>
+  </div>
+
+  <div class="grid" style="margin-top:12px;">
+    {% for r in result %}
+      <div class="card">
+        <div class="pill">{{ r.zone }}</div>
+
+        <div class="k">Count</div>
+        <div class="v">{{ r.summary.n }}</div>
+
+        <div class="k">Avg site (ping)</div>
+        <div>{{ r.summary.avg_site|floatformat:1 }}</div>
+
+        <div class="k">Avg bld (ping)</div>
+        <div>{{ r.summary.avg_bld|floatformat:1 }}</div>
+
+        <div class="k">Avg cost</div>
+        <div>{{ r.summary.avg_cost|floatformat:0 }}</div>
+
+        <div class="k">Avg cost / bld ping</div>
+        <div>{{ r.summary.avg_cpb|floatformat:0 }}</div>
+
+        <div class="k">Avg bld / site</div>
+        <div>{{ r.summary.avg_bps|floatformat:2 }}</div>
+
+        <div class="k" style="margin-top:10px;">Top designers (10)</div>
+        <ul>
+          {% for d in r.top_designers %}
+            <li>
+              <a href="/permits/?zone={{r.zone|urlencode}}&site_min={{q.site_min|urlencode}}&site_max={{q.site_max|urlencode}}&designer={{d.designer|urlencode}}">{{ d.designer }}</a>
+              <span class="pill">{{ d.n }}</span>
+            </li>
+          {% empty %}
+            <li class="muted">No data</li>
+          {% endfor %}
+        </ul>
+
+        <div style="margin-top:10px;">
+          <a class="btn2" href="/permits/?zone={{r.zone|urlencode}}&site_min={{q.site_min|urlencode}}&site_max={{q.site_max|urlencode}}">See permits</a>
+          <a class="btn2" href="/permits/export.csv?zone={{r.zone|urlencode}}&site_min={{q.site_min|urlencode}}&site_max={{q.site_max|urlencode}}">CSV</a>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+
+<hr style="margin:24px 0;"/>
+<h3>Urban Renewal (危老) Compare</h3>
+<div style="opacity:.75; margin-bottom:10px;">
+  篩選條件沿用上方 site_min/site_max（以危老 site_area_ping 篩選）
+</div>
+
+{% if ur_stats %}
+  <div style="margin:10px 0; padding:12px; border:1px solid #ddd; border-radius:10px;">
+    <div>UR count: <b>{{ ur_stats.count }}</b></div>
+    <div class="muted">avg_site_ping: {{ ur_stats.avg_site_ping }}</div>
+    <div class="muted">avg_total_bonus: {{ ur_stats.avg_total_bonus }}</div>
+  </div>
+{% endif %}
+
+{% if ur_rows %}
+<table style="border-collapse:collapse; width:100%; margin-top:10px;">
+  <thead>
+    <tr style="background:#fafafa;">
+      <th style="text-align:left; padding:8px; border-bottom:1px solid #eee;">case_no</th>
+      <th style="text-align:left; padding:8px; border-bottom:1px solid #eee;">district</th>
+      <th style="text-align:left; padding:8px; border-bottom:1px solid #eee;">approved_date</th>
+      <th style="text-align:left; padding:8px; border-bottom:1px solid #eee;">site_ping</th>
+      <th style="text-align:left; padding:8px; border-bottom:1px solid #eee;">total_bonus</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for r in ur_rows %}
+    <tr>
+      <td style="padding:8px; border-bottom:1px solid #f0f0f0;">{{ r.case_no }}</td>
+      <td style="padding:8px; border-bottom:1px solid #f0f0f0;">{{ r.district }}</td>
+      <td style="padding:8px; border-bottom:1px solid #f0f0f0;">{{ r.approved_date|default:"" }}</td>
+      <td style="padding:8px; border-bottom:1px solid #f0f0f0;">{{ r.site_area_ping|default:"" }}</td>
+      <td style="padding:8px; border-bottom:1px solid #f0f0f0;">{{ r.total_bonus_pct|default:"" }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<div style="opacity:.6;">(No UR rows matched)</div>
+{% endif %}
+
+</body>
+</html>
+
+
+
+
+
+

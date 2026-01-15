@@ -1,0 +1,65 @@
+{% extends "admin/change_form.html" %}
+{% load i18n admin_urls static admin_modify %}
+
+{% block content %}
+<div style="margin-bottom: 30px;">
+  <h1 style="margin-bottom: 20px;">可閱讀摘要</h1>
+
+  {# 1. 核准資訊 #}
+  <h2>1. 核准資訊</h2>
+  <table class="adminform">
+    <tr>
+      <th style="width: 150px;">核准日期</th>
+      <td>{{ original.approve_date|default:"—" }}</td>
+    </tr>
+  </table>
+
+  {# 2. 位置資訊 #}
+  <h2>2. 位置資訊</h2>
+  <table class="adminform">
+    <tr>
+      <th style="width: 150px;">行政區</th>
+      <td>{{ original.district|default:"—" }}</td>
+    </tr>
+    <tr>
+      <th>地段</th>
+      <td>{{ original.section|default:"—" }}</td>
+    </tr>
+    <tr>
+      <th>小段</th>
+      <td>{{ original.subsection|default:"—" }}</td>
+    </tr>
+    <tr>
+      <th>地號</th>
+      <td>{{ original.parcel_no|default:"—" }}</td>
+    </tr>
+    <tr>
+      <th>地址</th>
+      <td>{{ original.address|default:"—" }}</td>
+    </tr>
+  </table>
+
+  {# 3. 面積 #}
+  <h2>3. 面積</h2>
+  <table class="adminform">
+    <tr>
+      <th style="width: 150px;">基地面積（㎡）</th>
+      <td>{{ original.site_area_sqm|default:"—" }}</td>
+    </tr>
+    <tr>
+      <th>基地面積（坪）</th>
+      <td>{{ original.site_area_ping|default:"—" }}</td>
+    </tr>
+  </table>
+
+  {# 4. 原始資料 #}
+  <h2>4. 原始資料</h2>
+  <details>
+    <summary>展開原始資料（raw）</summary>
+    <pre style="white-space:pre-wrap; font-family: ui-monospace, Menlo, monospace; max-height: 360px; overflow:auto;">{{ original.raw }}</pre>
+  </details>
+</div>
+
+{# 保留原有的 form 和 inline #}
+{{ block.super }}
+{% endblock %}
