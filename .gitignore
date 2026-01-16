@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Django / runtime
+db.sqlite3
+*.log
+
+# Virtualenv / secrets
+venv/
+.env
+
+# OS / IDE
+.DS_Store
+.vscode/
+.idea/
+
+# Local data files (avoid committing large/raw sources)
+data/*.xml
+data/*.csv
+data/*.xlsx
