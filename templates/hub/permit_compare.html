@@ -1,7 +1,8 @@
 <!doctype html>
 <html lang="zh-Hant">
 <head>
-  <meta charset="utf-8">
+  <base href="{{ request.META.SCRIPT_NAME|default:'/wrehub' }}/">
+<meta charset="utf-8">
   <title>Compare Zones</title>
   <style>
     body { font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Arial; padding:16px; }
@@ -20,7 +21,7 @@
   </style>
 </head>
 <body>
-  <div style="display:flex; justify-content:space-between; align-items:center;"><h2 style="margin:0;">住二 / 住三 / 商三 / 商四：Compare</h2><div><a class="btn2" href="/">Home</a> <a class="btn2" href="/permits/">Permits</a></div></div>
+  <div style="display:flex; justify-content:space-between; align-items:center;"><h2 style="margin:0;">住二 / 住三 / 商三 / 商四：Compare</h2><div><a class="btn2" href="./">Home</a> <a class="btn2" href="permits/">Permits</a></div></div>
   <div class="muted">同一組條件下並排比較：件數、平均基地坪、平均建築坪、平均工程金額、平均成本/建築坪、平均 bld/site、Top 建築師。</div>
 
   <div class="card" style="margin-top:12px;">
@@ -49,8 +50,8 @@
 
       <div>
         <button class="btn" type="submit">Compare</button>
-        <a class="btn2" href="/compare/">Reset</a>
-        <a class="btn2" href="/permits/?site_min={{q.site_min|default:''}}&site_max={{q.site_max|default:''}}">Go Permits</a>
+        <a class="btn2" href="compare/">Reset</a>
+        <a class="btn2" href="permits/?site_min={{q.site_min|default:''}}&site_max={{q.site_max|default:''}}">Go Permits</a>
       </div>
     </form>
   </div>
@@ -82,7 +83,7 @@
         <ul>
           {% for d in r.top_designers %}
             <li>
-              <a href="/permits/?zone={{r.zone|urlencode}}&site_min={{q.site_min|urlencode}}&site_max={{q.site_max|urlencode}}&designer={{d.designer|urlencode}}">{{ d.designer }}</a>
+              <a href="permits/?zone={{r.zone|urlencode}}&site_min={{q.site_min|urlencode}}&site_max={{q.site_max|urlencode}}&designer={{d.designer|urlencode}}">{{ d.designer }}</a>
               <span class="pill">{{ d.n }}</span>
             </li>
           {% empty %}
@@ -91,8 +92,8 @@
         </ul>
 
         <div style="margin-top:10px;">
-          <a class="btn2" href="/permits/?zone={{r.zone|urlencode}}&site_min={{q.site_min|urlencode}}&site_max={{q.site_max|urlencode}}">See permits</a>
-          <a class="btn2" href="/permits/export.csv?zone={{r.zone|urlencode}}&site_min={{q.site_min|urlencode}}&site_max={{q.site_max|urlencode}}">CSV</a>
+          <a class="btn2" href="permits/?zone={{r.zone|urlencode}}&site_min={{q.site_min|urlencode}}&site_max={{q.site_max|urlencode}}">See permits</a>
+          <a class="btn2" href="permits/export.csv?zone={{r.zone|urlencode}}&site_min={{q.site_min|urlencode}}&site_max={{q.site_max|urlencode}}">CSV</a>
         </div>
       </div>
     {% endfor %}

@@ -3,6 +3,9 @@ import os
 from dotenv import load_dotenv
 import dj_database_url
 
+# -----------------------------------------------------------------------------
+# Base
+# -----------------------------------------------------------------------------
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 load_dotenv(BASE_DIR / ".env")
@@ -13,6 +16,9 @@ DEBUG = os.getenv("DJANGO_DEBUG", "0") == "1"
 
 ALLOWED_HOSTS = ["*"]
 
+# -----------------------------------------------------------------------------
+# Application
+# -----------------------------------------------------------------------------
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
@@ -53,7 +59,9 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "config.wsgi.application"
 
-# 優先使用 DATABASE_URL，否則 fallback 到個別環境變數
+# -----------------------------------------------------------------------------
+# Database
+# -----------------------------------------------------------------------------
 database_url = os.getenv("DATABASE_URL")
 if database_url:
     DATABASES = {
@@ -71,6 +79,9 @@ else:
         }
     }
 
+# -----------------------------------------------------------------------------
+# Password validation
+# -----------------------------------------------------------------------------
 AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
     {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
@@ -78,10 +89,44 @@ AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
 ]
 
+# -----------------------------------------------------------------------------
+# I18N
+# -----------------------------------------------------------------------------
 LANGUAGE_CODE = "zh-hant"
 TIME_ZONE = "Asia/Taipei"
 USE_I18N = True
 USE_TZ = True
 
-STATIC_URL = "static/"
+# -----------------------------------------------------------------------------
+# 🔴 CRITICAL: mount under /wrehub
+# -----------------------------------------------------------------------------
+FORCE_SCRIPT_NAME = "/wrehub"
+USE_X_FORWARDED_HOST = True
+
+# -----------------------------------------------------------------------------
+# Sessions / CSRF (HTTP + subpath)
+# -----------------------------------------------------------------------------
+SESSION_COOKIE_SECURE = False
+CSRF_COOKIE_SECURE = False
+
+SESSION_COOKIE_HTTPONLY = True
+CSRF_COOKIE_HTTPONLY = True
+
+SESSION_COOKIE_PATH = "/wrehub/"
+CSRF_COOKIE_PATH = "/wrehub/"
+
+CSRF_TRUSTED_ORIGINS = [
+    "http://127.0.0.1:8080",
+    "http://192.168.1.103:8080",
+]
+
+# -----------------------------------------------------------------------------
+# Static files (served by nginx)
+# -----------------------------------------------------------------------------
+STATIC_URL = "/wrehub/static/"
+STATIC_ROOT = "/opt/wrehub/staticfiles"
+
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+FORCE_SCRIPT_NAME = "/wrehub"
+USE_X_FORWARDED_HOST = True

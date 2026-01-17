@@ -1,7 +1,8 @@
 <!doctype html>
 <html lang="zh-Hant">
 <head>
-  <meta charset="utf-8">
+  <base href="{{ request.META.SCRIPT_NAME|default:'/wrehub' }}/">
+<meta charset="utf-8">
   <title>WRE Hub - Permits</title>
   <style>
     body { font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Arial; padding:16px; }
@@ -19,7 +20,7 @@
   </style>
 </head>
 <body>
-  <div style="display:flex; justify-content:space-between; align-items:center;"><h2 style="margin:0;">Permits Search</h2><div><a class="btn2" href="/">Home</a> <a class="btn2" href="/compare/">Compare</a></div></div>
+  <div style="display:flex; justify-content:space-between; align-items:center;"><h2 style="margin:0;">Permits Search</h2><div><a class="btn2" href="./">Home</a> <a class="btn2" href="compare/">Compare</a></div></div>
   <div class="muted">不用登入：admin 只是給你管理用，這頁是給你同事/你自己日常查詢。</div>
 
   <div class="row">
@@ -75,12 +76,12 @@
 
         <div>
           <button class="btn" type="submit">Search</button>
-          <a class="btn2" href="/permits/">Reset</a>
+          <a class="btn2" href="permits/">Reset</a>
         </div>
 
         <div>
           <div class="muted">Export</div>
-          <a class="btn2" href="/permits/export.csv?{% for k,v in q.items %}{% if k != 'page' %}{{k}}={{v|urlencode}}&{% endif %}{% endfor %}">CSV</a>
+          <a class="btn2" href="permits/export.csv?{% for k,v in q.items %}{% if k != 'page' %}{{k}}={{v|urlencode}}&{% endif %}{% endfor %}">CSV</a>
         </div>
       </form>
     </div>
@@ -144,7 +145,7 @@
     <tbody>
       {% for o in items %}
         <tr>
-          <td><a href="/permits/{{o.id}}/">{{ o.permit_no }}</a></td>
+          <td><a href="permits/{{o.id}}/">{{ o.permit_no }}</a></td>
           <td>{{ o.issue_date }}</td>
           <td>{{ o.zoning }}</td>
           <td>{{ o.designer }}</td>

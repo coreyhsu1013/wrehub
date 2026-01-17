@@ -1,7 +1,8 @@
 <!doctype html>
 <html>
 <head>
-  <meta charset="utf-8"/>
+  <base href="{{ request.META.SCRIPT_NAME|default:'/wrehub' }}/">
+<meta charset="utf-8"/>
   <title>Compare - Urban Renewal</title>
   <style>
     body { font-family: -apple-system, system-ui, sans-serif; margin: 20px; }
@@ -20,9 +21,9 @@
   <div style="display:flex; justify-content:space-between; align-items:center;">
     <h2 style="margin:0;">Compare (危老)</h2>
     <div class="muted">
-      <a href="/" style="text-decoration:none;">Home</a> ·
-      <a href="/compare/" style="text-decoration:none;">Compare Permits</a> ·
-      <a href="/urban-renewal/" style="text-decoration:none;">Urban Renewal List</a>
+      <a href="./" style="text-decoration:none;">Home</a> ·
+      <a href="compare/" style="text-decoration:none;">Compare Permits</a> ·
+      <a href="urban-renewal/" style="text-decoration:none;">Urban Renewal List</a>
     </div>
   </div>
 

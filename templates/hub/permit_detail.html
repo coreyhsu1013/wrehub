@@ -1,7 +1,8 @@
 <!doctype html>
 <html lang="zh-Hant">
 <head>
-  <meta charset="utf-8">
+  <base href="{{ request.META.SCRIPT_NAME|default:'/wrehub' }}/">
+<meta charset="utf-8">
   <title>{{ obj.permit_no }}</title>
   <style>
     body { font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Arial; padding:16px; }
@@ -16,14 +17,14 @@
 <div style="margin:16px 0; padding:12px; border:1px solid #ddd; border-radius:10px;">
   <div style="font-weight:700; margin-bottom:8px;">Quick Links</div>
   <div style="display:flex; gap:12px; flex-wrap:wrap;">
-    <a href="/compare/" style="text-decoration:none; padding:6px 10px; border:1px solid #ccc; border-radius:8px;">Compare (Permits)</a>
-    <a href="/compare-ur/" style="text-decoration:none; padding:6px 10px; border:1px solid #ccc; border-radius:8px;">Compare (Urban Renewal)</a>
-    <a href="/permits/" style="text-decoration:none; padding:6px 10px; border:1px solid #ccc; border-radius:8px;">Permits</a>
-    <a href="/urban-renewal/" style="text-decoration:none; padding:6px 10px; border:1px solid #ccc; border-radius:8px;">Urban Renewal</a>
+    <a href="compare/" style="text-decoration:none; padding:6px 10px; border:1px solid #ccc; border-radius:8px;">Compare (Permits)</a>
+    <a href="compare-ur/" style="text-decoration:none; padding:6px 10px; border:1px solid #ccc; border-radius:8px;">Compare (Urban Renewal)</a>
+    <a href="permits/" style="text-decoration:none; padding:6px 10px; border:1px solid #ccc; border-radius:8px;">Permits</a>
+    <a href="urban-renewal/" style="text-decoration:none; padding:6px 10px; border:1px solid #ccc; border-radius:8px;">Urban Renewal</a>
   </div>
 </div>
 
-  <a href="/permits/">← Back</a>
+  <a href="permits/">← Back</a>
   <h2>{{ obj.permit_no }}</h2>
   <div class="muted">Issue: {{ obj.issue_date }} | Year: {{ obj.permit_year }}</div>
 
