@@ -3,6 +3,8 @@
 import os
 import sys
 
+from dotenv import load_dotenv
+load_dotenv()   # ← 新增（讀取 .env）
 
 def main():
     """Run administrative tasks."""
