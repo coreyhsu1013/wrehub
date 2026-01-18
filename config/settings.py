@@ -7,14 +7,26 @@ import dj_database_url
 # Base
 # -----------------------------------------------------------------------------
 BASE_DIR = Path(__file__).resolve().parent.parent
-
 load_dotenv(BASE_DIR / ".env")
 
-SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "dev-secret")
 
+def _split_csv_env(key: str, default: str = "") -> list[str]:
+    raw = os.getenv(key, default)
+    return [x.strip() for x in raw.split(",") if x.strip()]
+
+
+# -----------------------------------------------------------------------------
+# Core
+# -----------------------------------------------------------------------------
+SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "dev-secret")
 DEBUG = os.getenv("DJANGO_DEBUG", "0") == "1"
 
-ALLOWED_HOSTS = ["*"]
+# IMPORTANT: allow dynamic public IP / ddns via env
+# Example:
+# ALLOWED_HOSTS=land2026.freeddns.org,192.168.1.103,127.0.0.1,localhost
+ALLOWED_HOSTS = _split_csv_env("ALLOWED_HOSTS", "*")
+if not ALLOWED_HOSTS:
+    ALLOWED_HOSTS = ["*"]
 
 # -----------------------------------------------------------------------------
 # Application
@@ -64,9 +76,7 @@ WSGI_APPLICATION = "config.wsgi.application"
 # -----------------------------------------------------------------------------
 database_url = os.getenv("DATABASE_URL")
 if database_url:
-    DATABASES = {
-        "default": dj_database_url.parse(database_url, conn_max_age=600)
-    }
+    DATABASES = {"default": dj_database_url.parse(database_url, conn_max_age=600)}
 else:
     DATABASES = {
         "default": {
@@ -98,7 +108,7 @@ USE_I18N = True
 USE_TZ = True
 
 # -----------------------------------------------------------------------------
-# 🔴 CRITICAL: mount under /wrehub
+# Mount under /wrehub (CRITICAL)
 # -----------------------------------------------------------------------------
 FORCE_SCRIPT_NAME = "/wrehub"
 USE_X_FORWARDED_HOST = True
@@ -108,17 +118,19 @@ USE_X_FORWARDED_HOST = True
 # -----------------------------------------------------------------------------
 SESSION_COOKIE_SECURE = False
 CSRF_COOKIE_SECURE = False
-
 SESSION_COOKIE_HTTPONLY = True
 CSRF_COOKIE_HTTPONLY = True
 
 SESSION_COOKIE_PATH = "/wrehub/"
 CSRF_COOKIE_PATH = "/wrehub/"
 
-CSRF_TRUSTED_ORIGINS = [
-    "http://127.0.0.1:8080",
-    "http://192.168.1.103:8080",
-]
+# IMPORTANT: read trusted origins from env so DDNS / changing IP works
+# Example:
+# CSRF_TRUSTED_ORIGINS=http://land2026.freeddns.org:8080,http://192.168.1.103:8080,http://127.0.0.1:8080
+CSRF_TRUSTED_ORIGINS = _split_csv_env(
+    "CSRF_TRUSTED_ORIGINS",
+    "http://127.0.0.1:8080,http://192.168.1.103:8080",
+)
 
 # -----------------------------------------------------------------------------
 # Static files (served by nginx)
@@ -128,5 +140,3 @@ STATIC_ROOT = "/opt/wrehub/staticfiles"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-FORCE_SCRIPT_NAME = "/wrehub"
-USE_X_FORWARDED_HOST = True
